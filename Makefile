@@ -1,9 +1,22 @@
+
 code: venv/bin/activate protobuf/trillian_log_api.proto
 	. venv/bin/activate; \
-	python -m grpc_tools.protoc -I./protobuf --python_out=. --grpc_python_out=. protobuf/trillian_log_api.proto
+	python3 -m grpc_tools.protoc -I./protobuf --python_out=. --grpc_python_out=. \
+	    protobuf/trillian_log_api.proto \
+	    protobuf/trillian.proto \
+	    protobuf/google/api/annotations.proto \
+	    protobuf/google/api/http.proto \
+	    protobuf/google/rpc/status.proto \
+	    protobuf/crypto/keyspb/keyspb.proto \
+	    protobuf/crypto/sigpb/sigpb.proto
 
 
 venv/bin/activate:	requirements.txt
-	virtualenv venv
+	virtualenv -p /usr/bin/python3 venv
 	. venv/bin/activate; \
 	pip install -r requirements.txt
+
+.PHONY: run
+run: code
+	. venv/bin/activate; \
+	python3 client.py
