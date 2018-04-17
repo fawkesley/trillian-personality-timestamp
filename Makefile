@@ -19,4 +19,4 @@ venv/bin/activate:	requirements.txt
 .PHONY: run
 run: code
 	. venv/bin/activate; \
-	python3 client.py
+	FLASK_APP=app.py python3 -m flask run --host=0.0.0.0
