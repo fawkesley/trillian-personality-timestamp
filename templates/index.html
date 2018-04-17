@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<body>
+  <div class="container">
+
+  <h1>Verifiable dataset demo</h1>
+
+  <h2>Add a log message</h2>
+  <form method="post" action="/add-log/">
+    <textarea name="log_leaf"></textarea>
+    <button type="submit">Add to dataset</button>
+  </form>
+
+  <a href="/add-log/">Add the current time to the log</a>
+
+  <h2><a href="/recent-logs/">See recent log entries</a></h2>
+  </div>
+
+</body>
+{% endblock %}
