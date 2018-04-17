@@ -16,12 +16,27 @@ from pathlib import Path
 HOME_DIR = str(Path.home())
 
 
+class Trillian():
+    def __init__(self, host, port, log_id):
+        self.__channel = grpc.insecure_channel('{}:{}'.format(host, port))
+        self.__stub = trillian_log_api_pb2_grpc.TrillianLogStub(self.__channel)
+        self.__log_id = log_id
+
+    def queue_leaf(self, data):
+        leaf = trillian_log_api_pb2.LogLeaf(leaf_value=data)
+
+        request = trillian_log_api_pb2.QueueLeafRequest(
+            log_id=self.__log_id,
+            leaf=leaf
+        )
+        return self.__stub.QueueLeaf(request)
+
+
 def main(argv):
     with io.open(pjoin(HOME_DIR, '.log_id'), 'r') as f:
         log_id = int(f.read())
 
-    channel = grpc.insecure_channel('localhost:8090')
-    stub = trillian_log_api_pb2_grpc.TrillianLogStub(channel)
+    trillian = Trillian('localhost', '8090', log_id)
 
     while True:
         now = datetime.datetime.now()
@@ -29,13 +44,8 @@ def main(argv):
 
         print('Adding `{}` to Log'.format(timestamp_data))
 
-        leaf = trillian_log_api_pb2.LogLeaf(leaf_value=timestamp_data)
+        response = trillian.queue_leaf(timestamp_data)
 
-        request = trillian_log_api_pb2.QueueLeafRequest(
-            log_id=log_id,
-            leaf=leaf
-        )
-        response = stub.QueueLeaf(request)
         print(response)
 
         time.sleep(5)
